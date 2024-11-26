@@ -33,28 +33,28 @@ const AddTask = () => {
         const db = getDatabase();
         try {
             await db.runAsync("INSERT INTO tasks (title, description, subjectId) VALUES (?, ?, ?);", [taskTitle, taskDescription, subjectId]);
-            setMessage("Task added successfully!");
+            setMessage("Tarefa adicionada com sucesso!");
             setTaskTitle("");
             setTaskDescription("");
             setSubjectId(null);
         } catch (error) {
             console.error(error);
-            setMessage("Failed to add task.");
+            setMessage("Erro ao adicionar tarefa.");
         }
     };
 
     return (
         <View style={styles.container}>
-            <Text style={styles.label}>Add a new task:</Text>
-            <TextInput style={styles.input} placeholder="Enter task title" value={taskTitle} onChangeText={setTaskTitle} />
-            <TextInput style={styles.input} placeholder="Enter task description" value={taskDescription} onChangeText={setTaskDescription} />
+            <Text style={styles.title}>Adicionar Tarefa</Text>
+            <TextInput style={styles.input} placeholder="Digite o título da tarefa" value={taskTitle} onChangeText={setTaskTitle} />
+            <TextInput style={styles.input} placeholder="Digite a descrição da tarefa" value={taskDescription} onChangeText={setTaskDescription} />
             <Picker selectedValue={subjectId} style={styles.picker} onValueChange={itemValue => setSubjectId(itemValue)}>
-                <Picker.Item label="Select a subject" value={null} />
+                <Picker.Item label="Selecione uma matéria" value={null} />
                 {subjects.map(subject => (
                     <Picker.Item key={subject.id} label={subject.name} value={subject.id} />
                 ))}
             </Picker>
-            <Button title="Add Task" onPress={handleAddTask} />
+            <Button title="Adicionar Tarefa" onPress={handleAddTask} />
             {message ? <Text style={styles.message}>{message}</Text> : null}
         </View>
     );
@@ -66,9 +66,10 @@ const styles = StyleSheet.create({
         padding: 20,
         marginTop: 20,
     },
-    label: {
-        fontSize: 18,
-        marginBottom: 10,
+    title: {
+        fontSize: 24, // Mesmo tamanho do título em index.tsx
+        fontWeight: "bold",
+        marginBottom: 20,
     },
     input: {
         borderWidth: 1,
