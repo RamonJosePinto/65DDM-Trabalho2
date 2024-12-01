@@ -2,11 +2,9 @@ import * as SQLite from "expo-sqlite";
 
 let db;
 
-// Initialize database
 export const initializeDatabase = async () => {
     db = await SQLite.openDatabaseAsync("study_manager.db");
 
-    // Verificar e adicionar a coluna "completed" caso ainda não exista
     await db.execAsync(`
     PRAGMA journal_mode = WAL;
 
@@ -20,12 +18,28 @@ export const initializeDatabase = async () => {
       title TEXT NOT NULL,
       description TEXT,
       subjectId INTEGER,
-      completed INTEGER DEFAULT 0, -- Coluna "completed"
+      completed INTEGER DEFAULT 0,
+      data TEXT,
       FOREIGN KEY (subjectId) REFERENCES subjects (id)
     );
-
-    ALTER TABLE tasks ADD COLUMN completed INTEGER DEFAULT 0;
   `);
 };
 
+export const clearDatabase = async () => {
+    const db = getDatabase();
+    try {
+        await db.runAsync("DROP TABLE IF EXISTS tasks;");
+        await db.runAsync("DROP TABLE IF EXISTS subjects;");
+        console.log("Tabelas deletadas com sucesso.");
+    } catch (error) {
+        console.error("Erro ao deletar tabelas:", error);
+    }
+};
+
 export const getDatabase = () => db;
+
+export default {
+    initializeDatabase,
+    clearDatabase,
+    getDatabase,
+};

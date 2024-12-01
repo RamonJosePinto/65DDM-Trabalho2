@@ -8,7 +8,7 @@ import {Task} from "@/types/types";
 export default function TasksScreen() {
     const router = useRouter();
     const {subjectId} = useLocalSearchParams();
-    const [tasks, setTasks] = useState<Task[]>([]); // Use o tipo Task[]
+    const [tasks, setTasks] = useState<Task[]>([]);
 
     const fetchTasks = async () => {
         const db = getDatabase();
@@ -34,10 +34,19 @@ export default function TasksScreen() {
         const db = getDatabase();
         try {
             await db.runAsync("UPDATE tasks SET completed = ? WHERE id = ?;", [currentStatus === 1 ? 0 : 1, taskId]);
-            fetchTasks(); // Atualizar a lista
+            fetchTasks();
         } catch (error) {
             console.error(error);
         }
+    };
+
+    const formatDate = (dateString: string) => {
+        const date = new Date(dateString);
+        return date.toLocaleDateString("pt-BR", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+        });
     };
 
     return (
@@ -51,6 +60,7 @@ export default function TasksScreen() {
                         <View style={styles.taskContent}>
                             <Text style={styles.taskTitle}>{item.title}</Text>
                             {item.description && <Text style={styles.taskDescription}>{item.description}</Text>}
+                            {item.data && <Text style={styles.taskDate}>Data: {formatDate(item.data)}</Text>}
                         </View>
                         <TouchableOpacity
                             style={[styles.statusCircle, item.completed === 1 && styles.statusCircleCompleted]}
@@ -81,6 +91,7 @@ const styles = StyleSheet.create({
     taskContent: {flex: 1},
     taskTitle: {fontSize: 18, fontWeight: "bold"},
     taskDescription: {fontSize: 14, color: "#666", marginTop: 5},
+    taskDate: {fontSize: 14, color: "#888", marginTop: 5},
     statusCircle: {
         width: 20,
         height: 20,
@@ -89,7 +100,7 @@ const styles = StyleSheet.create({
         borderColor: "#4D96FF",
     },
     statusCircleCompleted: {
-        backgroundColor: "#4CAF50", // Verde para tarefas concluídas
+        backgroundColor: "#4CAF50",
         borderColor: "#4CAF50",
     },
     emptyMessage: {textAlign: "center", fontSize: 16, color: "#666", marginTop: 20},

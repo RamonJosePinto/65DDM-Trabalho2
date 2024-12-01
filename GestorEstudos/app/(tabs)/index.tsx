@@ -7,22 +7,26 @@ import {Subject, SubjectRow} from "@/types/types";
 
 export default function HomeScreen() {
     const router = useRouter();
-    const [subjects, setSubjects] = useState<Subject[]>([]); // Use o tipo Subject[]
+    const [subjects, setSubjects] = useState<Subject[]>([]);
 
     const fetchSubjects = async () => {
         const db = getDatabase();
         try {
             const rows = await db.getAllAsync(`
-        SELECT subjects.id, subjects.name,
-          COUNT(tasks.id) AS taskCount,
-          SUM(CASE WHEN tasks.completed = 1 THEN 1 ELSE 0 END) AS completedCount
-        FROM subjects
-        LEFT JOIN tasks ON tasks.subjectId = subjects.id
-        GROUP BY subjects.id;
-      `);
+                SELECT subjects.id, subjects.name,
+                COUNT(tasks.id) AS taskCount,
+                SUM(CASE WHEN tasks.completed = 1 THEN 1 ELSE 0 END) AS completedCount
+                FROM subjects
+                LEFT JOIN tasks ON tasks.subjectId = subjects.id
+                GROUP BY subjects.id;
+            `);
+
             setSubjects(
                 rows.map((row: SubjectRow) => ({
-                    ...row,
+                    id: row.id,
+                    name: row.name,
+                    taskCount: row.taskCount || 0,
+                    completedCount: row.completedCount || 0,
                     progress: row.taskCount > 0 ? row.completedCount / row.taskCount : 0,
                 }))
             );
@@ -48,23 +52,20 @@ export default function HomeScreen() {
                 data={subjects}
                 keyExtractor={item => item.id.toString()}
                 numColumns={2}
-                renderItem={({item, index}) => {
-                    console.log("Rendering item:", item); // Adicione este log
-                    return (
-                        <TouchableOpacity style={[styles.card, {backgroundColor: cardColors[index % cardColors.length]}]} onPress={() => handleOpenTasks(item.id)}>
-                            <Text style={styles.cardTitle}>{item.name}</Text>
-                            <View style={styles.taskInfo}>
-                                <Text style={styles.cardTaskCount}>{item.taskCount && item.taskCount > 0 ? `${item.taskCount} Tarefas` : "Nenhuma tarefa"}</Text>
-                                {item.taskCount && item.taskCount > 0 && <Text style={styles.cardTaskPercentage}>{`${Math.round((item.progress ?? 0) * 100)}%`}</Text>}
+                renderItem={({item, index}) => (
+                    <TouchableOpacity style={[styles.card, {backgroundColor: cardColors[index % cardColors.length]}]} onPress={() => handleOpenTasks(item.id)}>
+                        <Text style={styles.cardTitle}>{item.name}</Text>
+                        <View style={styles.taskInfo}>
+                            <Text style={styles.cardTaskCount}>{item?.taskCount > 0 ? `${item.taskCount} Tarefas` : "Nenhuma tarefa"}</Text>
+                            {item?.taskCount > 0 && <Text style={styles.cardTaskPercentage}>{`${Math.round(item?.progress * 100)}%`}</Text>}
+                        </View>
+                        {item?.taskCount > 0 && (
+                            <View style={styles.progressBarBackground}>
+                                <View style={[styles.progressBarForeground, {width: `${item?.progress * 100}%`}]} />
                             </View>
-                            {item.taskCount && item.taskCount > 0 && (
-                                <View style={styles.progressBarBackground}>
-                                    <View style={[styles.progressBarForeground, {width: `${(item.progress ?? 0) * 100}%`}]} />
-                                </View>
-                            )}
-                        </TouchableOpacity>
-                    );
-                }}
+                        )}
+                    </TouchableOpacity>
+                )}
                 ListEmptyComponent={<Text style={styles.emptyMessage}>Nenhuma matéria cadastrada.</Text>}
             />
         </View>
@@ -96,15 +97,15 @@ const styles = StyleSheet.create({
     progressBarBackground: {
         width: "100%",
         height: 10,
-        backgroundColor: "#bdbdbd", // Cinza para a parte não preenchida
+        backgroundColor: "#bdbdbd",
         borderRadius: 5,
         marginTop: 10,
         overflow: "hidden",
     },
     progressBarForeground: {
         height: "100%",
-        backgroundColor: "#FFFFFF", // Branco para a parte preenchida
-        borderRadius: 5, // Mantém o formato arredondado
+        backgroundColor: "#FFFFFF",
+        borderRadius: 5,
     },
     emptyMessage: {textAlign: "center", fontSize: 16, color: "#666"},
 });

@@ -28,6 +28,15 @@ export default function RootLayout() {
         initializeDatabase();
     }, []);
 
+    // useEffect(() => {
+    //     const resetDatabase = async () => {
+    //         await clearDatabase(); // Limpa as tabelas antigas
+    //         await initializeDatabase(); // Recria as tabelas
+    //     };
+
+    //     resetDatabase();
+    // }, []);
+
     if (!loaded) {
         return null;
     }

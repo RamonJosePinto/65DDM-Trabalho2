@@ -13,12 +13,11 @@ const MAPPING = {
   'paperplane.fill': 'send',
   'chevron.left.forwardslash.chevron.right': 'code',
   'chevron.right': 'chevron-right',
-} as Partial<
-  Record<
-    import('expo-symbols').SymbolViewProps['name'],
-    React.ComponentProps<typeof MaterialIcons>['name']
-  >
->;
+  'calendar.fill': 'calendar-today',
+  'book.fill': 'menu-book',
+  'task.fill': 'task-alt',
+  'addtask.fill': 'add-task',
+} as const;
 
 export type IconSymbolName = keyof typeof MAPPING;
 
@@ -39,5 +38,11 @@ export function IconSymbol({
   style?: StyleProp<ViewStyle>;
   weight?: SymbolWeight;
 }) {
+  const materialIconName = MAPPING[name];
+  if (!materialIconName) {
+    console.error(`Icon "${name}" is not mapped to a MaterialIcon.`);
+    return null;
+  }
+  
   return <MaterialIcons color={color} size={size} name={MAPPING[name]} style={style} />;
 }

@@ -34,10 +34,31 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="explore"
+        name="calendar"
         options={{
-          title: 'Explore',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
+          title: 'Calendário',
+          tabBarIcon: ({ color }) => <IconSymbol size={28} name="calendar.fill" color={color} />,
+        }}
+      />
+       <Tabs.Screen
+        name="addSubject"
+        options={{
+          title: 'Adicionar Matéria',
+          tabBarIcon: ({ color }) => <IconSymbol size={28} name="book.fill" color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="tasks"
+        options={{
+          title: 'Adicionar Tarefa',
+          tabBarIcon: ({ color }) => <IconSymbol size={28} name="task.fill" color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="addTask"
+        options={{
+          title: 'Adicionar Tarefa',
+          tabBarIcon: ({ color }) => <IconSymbol size={28} name="addtask.fill" color={color} />,
         }}
       />
     </Tabs>
